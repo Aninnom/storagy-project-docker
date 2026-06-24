@@ -26,8 +26,8 @@ def generate_launch_description():
     if 'IGN_GAZEBO_RESOURCE_PATH' in os.environ:
         ign_resource_path = os.environ['IGN_GAZEBO_RESOURCE_PATH'] + os.pathsep + ign_resource_path
 
-    # 2. Include Gazebo Sim Server (running warehouse world)
-    world_sdf_path = os.path.join(pkg_storagy, 'worlds', '1206_2.sdf')
+    # 2. Include Gazebo Sim Server (running the parkinglot world)
+    world_sdf_path = os.path.join(pkg_storagy, 'worlds', 'parkinglot.sdf')
     gazebo_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
@@ -60,7 +60,11 @@ def generate_launch_description():
             '-topic', 'robot_description',
             '-x', '0.0',
             '-y', '0.0',
-            '-z', '0.1'
+            '-z', '0.1',
+            # yaw 90deg: robot's long side (0.4m, 세로) along +Y, short side
+            # (0.3m, 가로) along X -> "가로 짧고 세로 긴" spawn orientation,
+            # facing the parking bays on its right (the +X wall).
+            '-Y', '1.5708'
         ],
         output='screen'
     )

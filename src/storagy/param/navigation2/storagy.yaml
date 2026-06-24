@@ -197,12 +197,12 @@ global_costmap:
   global_costmap:
     ros__parameters:
       always_send_full_costmap: true
-      footprint: '[[0.25, 0.25], [0.25, -0.25], [-0.25, -0.25], [-0.25, 0.25]]'
-      footprint_padding: 0.10000000149011612
+      footprint: '[[0.2, 0.15], [0.2, -0.15], [-0.2, -0.15], [-0.2, 0.15]]'
+      footprint_padding: 0.02
       global_frame: map
       inflation_layer:
         cost_scaling_factor: 2.5
-        inflation_radius: 1.5
+        inflation_radius: 0.2
         plugin: nav2_costmap_2d::InflationLayer
       obstacle_layer:
         enabled: true
@@ -235,13 +235,13 @@ local_costmap:
   local_costmap:
     ros__parameters:
       always_send_full_costmap: true
-      footprint: '[[0.25, 0.25], [0.25, -0.25], [-0.25, -0.25], [-0.25, 0.25]]'
-      footprint_padding: 0.10000000149011612
+      footprint: '[[0.2, 0.15], [0.2, -0.15], [-0.2, -0.15], [-0.2, 0.15]]'
+      footprint_padding: 0.02
       global_frame: map
       height: 3
       inflation_layer:
         cost_scaling_factor: 2.5
-        inflation_radius: 1.5
+        inflation_radius: 0.2
         plugin: nav2_costmap_2d::InflationLayer
       obstacle_layer:
         enabled: true

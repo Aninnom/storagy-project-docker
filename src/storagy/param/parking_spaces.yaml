@@ -1,0 +1,22 @@
+# Parking slots for parkinglot world (map frame). Each slot: 가로/X depth 0.50m, 세로/Y 0.45m,
+# flush to right wall (back X=0.45), 4 slots from top (Y=1.97). Entry opens toward -X.
+# parked pose = nose-in facing the wall (+X), yaw 0.0 rad.
+parking_spaces:
+  P1:
+    center: {x: 0.200, y: 1.745}
+    bounds: {x_min: -0.050, x_max: 0.450, y_min: 1.520, y_max: 1.970}
+    parked_pose: {x: 0.200, y: 1.745, yaw: 0.0}
+  P2:
+    center: {x: 0.200, y: 1.295}
+    bounds: {x_min: -0.050, x_max: 0.450, y_min: 1.070, y_max: 1.520}
+    parked_pose: {x: 0.200, y: 1.295, yaw: 0.0}
+  P3:
+    center: {x: 0.200, y: 0.845}
+    bounds: {x_min: -0.050, x_max: 0.450, y_min: 0.620, y_max: 1.070}
+    parked_pose: {x: 0.200, y: 0.845, yaw: 0.0}
+  P4:
+    center: {x: 0.200, y: 0.395}
+    bounds: {x_min: -0.050, x_max: 0.450, y_min: 0.170, y_max: 0.620}
+    parked_pose: {x: 0.200, y: 0.395, yaw: 0.0}
+size: {garo_x: 0.50, sero_y: 0.45}
+robot_size: {garo_x: 0.30, sero_y: 0.40}
