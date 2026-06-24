@@ -117,7 +117,7 @@ def generate_launch_description():
 
     # 9. Include Navigation2
     use_nav2 = LaunchConfiguration('use_nav2', default='false')
-    map_path = LaunchConfiguration('map', default=os.path.join(pkg_storagy, 'map', '1206_sim_1.yaml'))
+    map_path = LaunchConfiguration('map', default=os.path.join(pkg_storagy, 'map', 'parkinglot.yaml'))
     nav2 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_storagy, 'launch', 'navigation2', 'navigation2.launch.py')
@@ -147,7 +147,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'map',
-            default_value=os.path.join(pkg_storagy, 'map', '1206_sim_1.yaml'),
+            default_value=os.path.join(pkg_storagy, 'map', 'parkinglot.yaml'),
             description='Full path to map file to load'
         ),
         SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', gz_resource_path),

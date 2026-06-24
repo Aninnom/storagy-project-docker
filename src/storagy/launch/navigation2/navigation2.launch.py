@@ -34,7 +34,7 @@ def generate_launch_description():
         default=os.path.join(
             get_package_share_directory(MOBILE_MODEL),
             'map',
-            '1206_sim_1.yaml'))
+            'parkinglot.yaml'))
 
     param_file_name = MOBILE_MODEL + '.yaml'
     param_dir = LaunchConfiguration(
