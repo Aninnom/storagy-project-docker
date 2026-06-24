@@ -1,6 +1,6 @@
 # Storagy Project (Docker)
 
-Storagy 로봇 ROS 2 프로젝트를 **Docker 하나로** 실행하기 위한 워크스페이스 골격입니다.
+Storagy 로봇 ROS 2 프로젝트(주차장 시뮬레이션)를 **Docker 하나로** 실행하는 워크스페이스입니다.
 
 - **GPU 불필요** — 소프트웨어 렌더링으로 동작
 - **Windows / macOS(Apple Silicon 포함) / Ubuntu** 어디서나 동일하게 실행
@@ -25,31 +25,127 @@ docker compose up -d --build
 ```
 
 브라우저에서 **http://localhost:6080** 으로 접속하면 리눅스 데스크탑이 열립니다.
-데스크탑 안의 터미널에서 실행합니다:
+데스크탑 안의 터미널에서 시뮬레이션(Gazebo + 로봇 + RViz)을 실행합니다:
 
 ```bash
-ros2 launch storagy bringup.launch.py
+# 변경(월드/런치/맵/param)을 반영하려면 먼저 한 번 재빌드
+rebuild_ws.sh
+
+# 주차장 월드 + 로봇 (구조/주차칸 확인용)
+ros2 launch storagy simulation_bringup.launch.py use_slam:=false use_nav2:=false
+
+# 자율주행까지 (parkinglot 맵 + Nav2)
+ros2 launch storagy simulation_bringup.launch.py use_slam:=false use_nav2:=true
 ```
 
 ## 맵 불러오기
 
-매핑은 이미 다른 곳에서 했다고 가정합니다. 완성된 맵 파일(`<이름>.yaml` + `<이름>.pgm`)을
-`src/storagy/map/` 에 넣고, 런치 인자로 지정해 불러옵니다:
+매핑은 이미 다른 곳에서 했다고 가정합니다. 기본 맵은 **`parkinglot`** 으로 이미 연결돼 있어,
+`use_nav2:=true` 로 시뮬을 띄우면 자동으로 로드됩니다:
 
 ```bash
-ros2 launch storagy bringup.launch.py map:=<이름>.yaml
+ros2 launch storagy simulation_bringup.launch.py use_slam:=false use_nav2:=true
 ```
 
-- 기본 맵 이름은 `bringup.launch.py` 상단의 `DEFAULT_MAP` 에 정의돼 있습니다(현재 `map.yaml`). 맵이 준비되면 이 값을 바꾸세요.
-- `bringup.launch.py` 는 맵 로딩 + Nav2(map_server·AMCL·내비게이션)만 연결돼 있습니다.
-  AMCL이 위치추정을 하려면 `/scan` 과 TF를 발행하는 **로봇/Gazebo 시뮬**이 함께 떠 있어야 합니다 — 해당 부분은 프로젝트를 키우며 추가하세요.
+- 맵 파일은 `src/storagy/map/parkinglot.yaml` (+ `.pgm`) 입니다. 다른 맵을 쓰려면 같은 폴더에
+  넣고 `map:=<이름>.yaml` 런치 인자로 지정하거나, `simulation_bringup.launch.py` 의 기본 맵 경로를 바꾸세요.
 - 맵 파일을 새로 추가/수정한 뒤에는 재빌드가 필요합니다: `docker compose exec storagy-project rebuild_ws.sh`
+
+> 참고: `bringup.launch.py` 는 **실제 로봇**용 bringup(robot_state_publisher + 하드웨어)이며
+> Gazebo 시뮬과는 무관합니다. 시뮬은 `simulation_bringup.launch.py` 를 사용하세요.
 
 종료:
 
 ```bash
 docker compose down
 ```
+
+## Gazebo에서 주차장 월드 확인하기
+
+주차장 환경은 `src/storagy/worlds/parkinglot.sdf` 한 파일에 모두 들어 있습니다
+(벽 + 검은 테이프 주차칸 4개 + 바닥/조명, 외부 메시 참조 없음). 확인 방법은 두 가지입니다.
+
+### A. 월드 파일만 빠르게 보기 (로봇 없음)
+
+Gazebo Harmonic(`gz-sim8`)이 설치된 환경이면 파일 하나만 있으면 됩니다:
+
+```bash
+gz sim src/storagy/worlds/parkinglot.sdf
+```
+
+- 오른쪽 벽에 붙은 **검은 ㄷ자 주차선 4칸**(입구는 안쪽으로 개방)이 보입니다.
+- 월드만 띄우므로 로봇은 나오지 않습니다. "주차장 레이아웃만 공유/확인"할 때 적합합니다.
+
+### B. 로봇까지 띄워서 보기 (Docker / noVNC)
+
+```bash
+docker compose up -d --build
+docker compose exec storagy-project rebuild_ws.sh
+# http://localhost:6080 접속 후 데스크탑 터미널에서:
+ros2 launch storagy simulation_bringup.launch.py use_slam:=false use_nav2:=false
+```
+
+로봇은 `(0, 0)` 에 **세로로 길게(+Y 방향)** 스폰되며, 오른쪽(+X)이 주차벽입니다.
+각 주차칸 좌표·주차 목표 자세는 `src/storagy/param/parking_spaces.yaml` 에 정리돼 있습니다.
+
+## WSL에서 네이티브 실행 (Windows 팀원용)
+
+Docker 없이 **WSL2 + Ubuntu 22.04** 에서 직접 빌드해 실행할 수도 있습니다.
+WSLg 가 GUI를 그대로 띄워주므로 noVNC 없이 Gazebo/RViz 창이 바로 뜹니다.
+(Windows 11 또는 최신 Windows 10 권장)
+
+### 1. WSL2 + Ubuntu 22.04 설치 (PowerShell, 관리자)
+
+```powershell
+wsl --install -d Ubuntu-22.04
+# 설치 후 Ubuntu 터미널을 열어 사용자 계정을 만든 뒤 아래는 모두 Ubuntu 안에서 실행합니다.
+```
+
+### 2. ROS 2 Humble + Gazebo Harmonic 설치 (Ubuntu 안)
+
+```bash
+# ROS 2 Humble
+sudo apt update && sudo apt install -y software-properties-common curl
+sudo add-apt-repository -y universe
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+     -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
+     | sudo tee /etc/apt/sources.list.d/ros2.list
+sudo apt update && sudo apt install -y ros-humble-desktop python3-colcon-common-extensions
+
+# Gazebo Harmonic + ros_gz + Nav2/SLAM (Dockerfile 과 동일한 패키지)
+sudo curl -fsSL https://packages.osrfoundation.org/gazebo.gpg \
+     -o /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" \
+     | sudo tee /etc/apt/sources.list.d/gazebo-stable.list
+sudo apt update && sudo apt install -y \
+     gz-harmonic ros-humble-ros-gzharmonic \
+     ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-slam-toolbox \
+     ros-humble-xacro ros-humble-robot-state-publisher ros-humble-joint-state-publisher \
+     ros-humble-rviz2
+```
+
+### 3. 워크스페이스 빌드 & 실행
+
+```bash
+git clone https://github.com/Aninnom/storagy-project-docker.git
+cd storagy-project-docker
+
+source /opt/ros/humble/setup.bash
+colcon build --symlink-install
+source install/setup.bash
+
+# GPU 패스스루가 없으면 소프트웨어 렌더링으로
+export LIBGL_ALWAYS_SOFTWARE=1
+
+# 월드 파일만 빠르게
+gz sim src/storagy/worlds/parkinglot.sdf
+# 또는 로봇까지
+ros2 launch storagy simulation_bringup.launch.py use_slam:=false use_nav2:=false
+```
+
+> 코드/월드/맵/param 을 고친 뒤에는 `colcon build` 를 다시 돌리고
+> `source install/setup.bash` 로 새 환경을 적용하세요.
 
 ## 코드 수정하기 (볼륨 마운트)
 
@@ -72,10 +168,18 @@ noVNC 데스크탑 안의 터미널에서 직접 `rebuild_ws.sh` / `run_sim.sh` 
 │   ├── run_sim.sh          # 데스크탑 세션에서 시뮬레이션 실행
 │   └── rebuild_ws.sh       # src 수정 후 컨테이너 안에서 colcon 재빌드
 └── src/
-    └── storagy/            # 로봇 패키지 (런치 파일 등 — 여기에 살을 붙여 나갑니다)
+    └── storagy/            # 로봇 패키지 (URDF, 월드, 맵, 런치, param, scripts ...)
         ├── package.xml
         ├── CMakeLists.txt
         ├── launch/
-        │   └── bringup.launch.py   # 맵 로딩 + Nav2 연결
-        └── map/                    # 완성된 맵(.yaml/.pgm)을 여기에 넣으세요
+        │   ├── simulation_bringup.launch.py  # Gazebo + 로봇 + RViz (+ SLAM/Nav2)
+        │   └── ...
+        ├── worlds/
+        │   └── parkinglot.sdf      # 주차장 월드 (벽 + 검은 테이프 주차칸 4개)
+        ├── map/
+        │   ├── parkinglot.yaml     # parkinglot 맵 (+ .pgm)
+        │   └── ...
+        └── param/
+            ├── parking_spaces.yaml          # 주차칸 좌표/주차 목표 자세
+            └── navigation2/storagy.yaml     # Nav2 (풋프린트 0.4x0.3 등)
 ```
