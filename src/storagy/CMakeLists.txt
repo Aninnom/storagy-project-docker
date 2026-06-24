@@ -21,7 +21,7 @@ find_package(urdf REQUIRED)
 ################################################################################
 # Install
 ################################################################################
-install(DIRECTORY behavior_trees config launch map meshes models param path rviz urdf worlds pathdata
+install(DIRECTORY behavior_trees config launch map meshes models param path rviz scripts urdf worlds pathdata
   DESTINATION share/${PROJECT_NAME}
 )
 

@@ -1,22 +1,26 @@
-# Parking slots (map frame). 4 bays along TOP (Y+) wall, inset from the
-# chamfered X-/Y+ corner. Slot 가로폭 X=0.45 x 세로깊이 Y=0.5. Entry opens -Y.
+# Parking slots (map frame), aligned to the tape lines in worlds/parkinglot.sdf
+# and flush against the left (X-) wall. Divider tapes sit at
+# x = -2.15, -1.70, -1.25, -0.80, -0.35 (each 0.08 wide); the back line is at
+# y=1.588. Four bays open toward -Y, between consecutive dividers
+# (center-to-center pitch 0.45). Bay interior spans y 1.128..1.628.
 parking_spaces:
   P1:
-    center: {x: -1.925, y: 1.348}
-    bounds: {x_min: -2.150, x_max: -1.700, y_min: 1.098, y_max: 1.598}
-    parked_pose: {x: -1.925, y: 1.348, yaw: 1.5708}
+    center: {x: -1.925, y: 1.378}
+    bounds: {x_min: -2.150, x_max: -1.700, y_min: 1.128, y_max: 1.628}
+    parked_pose: {x: -1.925, y: 1.378, yaw: 1.5708}
   P2:
-    center: {x: -1.475, y: 1.348}
-    bounds: {x_min: -1.700, x_max: -1.250, y_min: 1.098, y_max: 1.598}
-    parked_pose: {x: -1.475, y: 1.348, yaw: 1.5708}
+    center: {x: -1.475, y: 1.378}
+    bounds: {x_min: -1.700, x_max: -1.250, y_min: 1.128, y_max: 1.628}
+    parked_pose: {x: -1.475, y: 1.378, yaw: 1.5708}
   P3:
-    center: {x: -1.025, y: 1.348}
-    bounds: {x_min: -1.250, x_max: -0.800, y_min: 1.098, y_max: 1.598}
-    parked_pose: {x: -1.025, y: 1.348, yaw: 1.5708}
+    center: {x: -1.025, y: 1.378}
+    bounds: {x_min: -1.250, x_max: -0.800, y_min: 1.128, y_max: 1.628}
+    parked_pose: {x: -1.025, y: 1.378, yaw: 1.5708}
   P4:
-    center: {x: -0.575, y: 1.348}
-    bounds: {x_min: -0.800, x_max: -0.350, y_min: 1.098, y_max: 1.598}
-    parked_pose: {x: -0.575, y: 1.348, yaw: 1.5708}
+    center: {x: -0.575, y: 1.378}
+    bounds: {x_min: -0.800, x_max: -0.350, y_min: 1.128, y_max: 1.628}
+    parked_pose: {x: -0.575, y: 1.378, yaw: 1.5708}
+# Bay pitch 0.45 (center-to-center); clear interior ~0.37 between 0.08 tapes.
 size: {garo_x: 0.45, sero_y: 0.50}
 robot_size: {garo_x: 0.30, sero_y: 0.40}
 robot_spawn: {x: 0.150, y: -0.120, yaw: 3.14159}

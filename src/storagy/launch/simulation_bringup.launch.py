@@ -35,12 +35,18 @@ def generate_launch_description():
         launch_arguments={'gz_args': f'-s -r {world_sdf_path}'}.items()
     )
 
-    # 3. Include Gazebo Sim GUI (client only)
+    # 3. Include Gazebo Sim GUI (client only). Needs an X display; disable with
+    #    use_gui:=false for headless runs (e.g. CI or `docker compose exec`,
+    #    which has no access to the noVNC X server). The GUI is a "required"
+    #    launch process, so if it cannot connect to a display it brings the
+    #    whole launch down — hence the switch.
+    use_gui = LaunchConfiguration('use_gui', default='true')
     gazebo_gui = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
         ),
-        launch_arguments={'gz_args': '-g'}.items()
+        launch_arguments={'gz_args': '-g'}.items(),
+        condition=IfCondition(use_gui),
     )
 
     # 4. Include Robot State Publisher (using simulation time)
@@ -138,6 +144,11 @@ def generate_launch_description():
             'use_rviz2',
             default_value='true',
             description='Whether to launch RViz2'
+        ),
+        DeclareLaunchArgument(
+            'use_gui',
+            default_value='true',
+            description='Whether to launch the Gazebo GUI (needs an X display)'
         ),
         DeclareLaunchArgument(
             'use_slam',
