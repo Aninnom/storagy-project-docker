@@ -1,5 +1,10 @@
 services:
   storagy-project:
+    # Pin to amd64: the ROS<->Gazebo Harmonic bridge (ros_gz / ros-gzharmonic)
+    # has no arm64 apt build, so the image is amd64-only. On Windows/Linux amd64
+    # this runs natively; on Apple Silicon (arm64) Docker Desktop runs it under
+    # emulation (Rosetta/QEMU) — works, just slower for Gazebo.
+    platform: linux/amd64
     # Build from source with `docker compose build`. Set an `image:` tag here
     # if you later push a prebuilt image to a registry.
     build: .
