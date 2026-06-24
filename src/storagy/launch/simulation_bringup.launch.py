@@ -58,13 +58,13 @@ def generate_launch_description():
         arguments=[
             '-name', 'storagy',
             '-topic', 'robot_description',
-            '-x', '0.0',
-            '-y', '0.0',
+            # Lower-right corner of the room, facing -X (yaw 180deg). The 4
+            # parking bays are along the top (Y+) wall; the robot drives across
+            # and parks front/rear into a bay (bay depth 0.50m along Y).
+            '-x', '0.15',
+            '-y', '-0.12',
             '-z', '0.1',
-            # yaw 90deg: robot's long side (0.4m, 세로) along +Y, short side
-            # (0.3m, 가로) along X -> "가로 짧고 세로 긴" spawn orientation,
-            # facing the parking bays on its right (the +X wall).
-            '-Y', '1.5708'
+            '-Y', '3.14159'
         ],
         output='screen'
     )
