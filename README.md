@@ -62,21 +62,8 @@ docker compose down
 
 ## Gazebo에서 주차장 월드 확인하기
 
-주차장 환경은 `src/storagy/worlds/parkinglot.sdf` 한 파일에 모두 들어 있습니다
-(벽 + 검은 테이프 주차칸 4개 + 바닥/조명, 외부 메시 참조 없음). 확인 방법은 두 가지입니다.
-
-### A. 월드 파일만 빠르게 보기 (로봇 없음)
-
-Gazebo Harmonic(`gz-sim8`)이 설치된 환경이면 파일 하나만 있으면 됩니다:
-
-```bash
-gz sim src/storagy/worlds/parkinglot.sdf
-```
-
-- 오른쪽 벽에 붙은 **검은 ㄷ자 주차선 4칸**(입구는 안쪽으로 개방)이 보입니다.
-- 월드만 띄우므로 로봇은 나오지 않습니다. "주차장 레이아웃만 공유/확인"할 때 적합합니다.
-
-### B. 로봇까지 띄워서 보기 (Docker / noVNC)
+주차장 환경은 `src/storagy/worlds/parkinglot.sdf` 에 들어 있습니다
+(벽 + 검은 테이프 주차칸 4개 + 바닥/조명, 외부 메시 참조 없음).
 
 ```bash
 docker compose up -d --build
@@ -85,8 +72,12 @@ docker compose exec storagy-project rebuild_ws.sh
 ros2 launch storagy simulation_bringup.launch.py use_slam:=false use_nav2:=false
 ```
 
-로봇은 `(0, 0)` 에 **세로로 길게(+Y 방향)** 스폰되며, 오른쪽(+X)이 주차벽입니다.
-각 주차칸 좌표·주차 목표 자세는 `src/storagy/param/parking_spaces.yaml` 에 정리돼 있습니다.
+- 오른쪽 벽에 붙은 **검은 ㄷ자 주차선 4칸**(입구는 안쪽으로 개방)과 로봇이 보입니다.
+- 로봇은 `(0, 0)` 에 **세로로 길게(+Y 방향)** 스폰되며, 오른쪽(+X)이 주차벽입니다.
+- 각 주차칸 좌표·주차 목표 자세는 `src/storagy/param/parking_spaces.yaml` 에 정리돼 있습니다.
+
+> 월드 파일만 빠르게 보고 싶다면(로봇 없이), Gazebo Harmonic 이 설치된 환경에서
+> `gz sim src/storagy/worlds/parkinglot.sdf` 한 줄이면 됩니다. (아래 WSL 경로 참고)
 
 ## WSL에서 네이티브 실행 (Windows 팀원용)
 
