@@ -1,0 +1,19 @@
+services:
+  storagy-project:
+    # Build from source with `docker compose build`. Set an `image:` tag here
+    # if you later push a prebuilt image to a registry.
+    build: .
+    container_name: storagy-project
+    environment:
+      - LIBGL_ALWAYS_SOFTWARE=1   # software rendering, no GPU required
+    ports:
+      - "6080:80"     # noVNC desktop -> open http://localhost:6080 (Gazebo/RViz)
+    volumes:
+      # Live-mount the source code so you can edit it on the host.
+      #  - After editing launch files / worlds / maps / URDF, rebuild:
+      #      docker compose exec storagy-project rebuild_ws.sh
+      - ./src:/opt/storagy_project_ws/src
+    shm_size: "1gb"   # Gazebo/RViz need more shared memory than the 64MB default
+    security_opt:
+      - seccomp:unconfined
+    restart: unless-stopped

@@ -1,0 +1,8 @@
+# Don't ship build artifacts or local env into the image build context.
+build/
+install/
+log/
+.git/
+**/__pycache__/
+*.pyc
+.env
