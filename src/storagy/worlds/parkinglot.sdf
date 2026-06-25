@@ -195,22 +195,9 @@
           <material><ambient>0.02 0.02 0.02 1</ambient><diffuse>0.03 0.03 0.03 1</diffuse><emissive>0.02 0.02 0.02 1</emissive></material></visual>
     </link></model>
 
-    <!-- Parked cars occupying P1 and P3, centered in their tape bays
-         (P1 x=-1.925, P3 x=-1.025; bay center y=1.378). Box 0.32(X) x 0.42(Y) x
-         0.30(Z) fits the ~0.37 clear width between dividers; bottom on floor
-         (z center 0.15), top 0.30m above the lidar (~0.13m) so the 2D scan hits
-         them. P2 and P4 stay empty. Edit these links to change the scenario. -->
-    <model name="parked_cars"><static>true</static><link name="link">
-        <collision name="car_P1_col"><pose>-1.9250 1.3780 0.1500 0 0 0</pose>
-          <geometry><box><size>0.3200 0.4200 0.3000</size></box></geometry></collision>
-        <visual name="car_P1"><pose>-1.9250 1.3780 0.1500 0 0 0</pose>
-          <geometry><box><size>0.3200 0.4200 0.3000</size></box></geometry>
-          <material><ambient>0.10 0.20 0.55 1</ambient><diffuse>0.15 0.30 0.75 1</diffuse></material></visual>
-        <collision name="car_P3_col"><pose>-1.0250 1.3780 0.1500 0 0 0</pose>
-          <geometry><box><size>0.3200 0.4200 0.3000</size></box></geometry></collision>
-        <visual name="car_P3"><pose>-1.0250 1.3780 0.1500 0 0 0</pose>
-          <geometry><box><size>0.3200 0.4200 0.3000</size></box></geometry>
-          <material><ambient>0.55 0.12 0.12 1</ambient><diffuse>0.75 0.18 0.18 1</diffuse></material></visual>
-    </link></model>
+    <!-- Parked cars are NOT baked into the world. They are spawned at runtime by
+         the launch `occupied` argument (default P1,P3) using models/parked_car,
+         so occupancy scenarios can be changed without editing this file. See
+         launch/spawn_parked_cars.launch.py. -->
   </world>
 </sdf>

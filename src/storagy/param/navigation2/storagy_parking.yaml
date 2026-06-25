@@ -185,7 +185,10 @@ controller_server:
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
     progress_checker:
-      movement_time_allowance: 10.0
+      # More patient than the default 10 s: under amd64 emulation (Apple Silicon)
+      # the sim runs slow, so the final slow approach can move <0.5 m within the
+      # window and trip a false "failed to make progress" abort.
+      movement_time_allowance: 25.0
       plugin: nav2_controller::SimpleProgressChecker
       required_movement_radius: 0.5
     progress_checker_plugin: progress_checker

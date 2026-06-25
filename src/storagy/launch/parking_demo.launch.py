@@ -50,6 +50,14 @@ def generate_launch_description():
         }.items(),
     )
 
+    # 1b. Parked cars for the chosen occupancy scenario (default P1,P3).
+    parked_cars = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(pkg_storagy, "launch", "spawn_parked_cars.launch.py")
+        ),
+        launch_arguments={"occupied": LaunchConfiguration("occupied")}.items(),
+    )
+
     # 2. Lightweight localisation: static map -> odom = identity (odom is already
     #    reported in world == map coordinates).
     static_map_odom = Node(
@@ -94,7 +102,11 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument("use_rviz2", default_value="true"),
         DeclareLaunchArgument("use_gui", default_value="true"),
+        DeclareLaunchArgument(
+            "occupied", default_value="P1,P3",
+            description="Bays to fill with parked cars, e.g. occupied:=P2,P4."),
         simulation,
+        parked_cars,
         static_map_odom,
         occupancy,
         line_detector,

@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<!-- A box standing in for a parked car. Size 0.32(X) x 0.42(Y) x 0.30(Z) fits
+     the ~0.37 m clear width between dividers; the link origin is 0.15 m up so the
+     box rests on the floor and its top (0.30 m) is above the lidar (~0.13 m), so
+     the 2D scan hits it. Static: it stays exactly where it is spawned. -->
+<sdf version="1.8">
+  <model name="parked_car">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry><box><size>0.32 0.42 0.30</size></box></geometry>
+      </collision>
+      <visual name="visual">
+        <geometry><box><size>0.32 0.42 0.30</size></box></geometry>
+        <material>
+          <ambient>0.10 0.20 0.55 1</ambient>
+          <diffuse>0.15 0.30 0.75 1</diffuse>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
