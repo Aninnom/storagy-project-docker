@@ -17,7 +17,7 @@
 # variables (e.g. AMENT_TRACE_SETUP_FILES), which would abort the script before
 # it can launch.
 
-PATTERNS='gz sim|/usr/bin/ruby|parameter_bridge|robot_state_publisher|static_transform_publisher|rviz2|slot_occupancy_node|ros_gz_sim|ros2 launch storagy'
+PATTERNS='gz sim|/usr/bin/ruby|parameter_bridge|robot_state_publisher|static_transform_publisher|rviz2|slot_occupancy_node|line_detector_node|parking_manager_node|controller_server|planner_server|bt_navigator|behavior_server|smoother_server|waypoint_follower|velocity_smoother|lifecycle_manager|ros_gz_sim|ros2 launch storagy'
 
 echo "[clean] stopping any existing parkinglot sim / ROS stack..."
 # Rosetta wraps binaries in /run/rosetta/rosetta, which makes `pkill -f` unreliable,
@@ -47,4 +47,13 @@ source /opt/ros/humble/setup.bash
 source /opt/storagy_project_ws/install/setup.bash
 
 echo "[run] launching one parking demo (Ctrl-C to stop)..."
-exec ros2 launch storagy parking_demo.launch.py "$@"
+# Full autonomous-parking demo: sim + lidar occupancy + camera line detector +
+# Nav2 (no AMCL) + parking-manager (approach + camera/lidar dock). Override the
+# launch file with the first positional arg if needed, e.g.
+#   clean_and_run_parking.sh parking_demo.launch.py        # Phase 0-2 only
+#   clean_and_run_parking.sh parking_nav.launch.py use_rviz2:=false
+LAUNCH_FILE="parking_nav.launch.py"
+case "$1" in
+    *.launch.py) LAUNCH_FILE="$1"; shift ;;
+esac
+exec ros2 launch storagy "$LAUNCH_FILE" "$@"

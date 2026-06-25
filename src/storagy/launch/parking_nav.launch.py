@@ -31,6 +31,7 @@ from launch.actions import (
     DeclareLaunchArgument,
     TimerAction,
 )
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
@@ -56,7 +57,10 @@ def generate_launch_description():
         bt_dir, "navigate_through_poses_w_replanning_and_recovery.xml"
     )
 
+    parking_rviz = os.path.join(pkg_storagy, "rviz", "parking.rviz")
+
     # 1. Simulation (SLAM off; Nav2 off -- we bring nav up ourselves below).
+    #    Its own RViz is disabled; we start a parking-specific RViz in step 7.
     simulation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_storagy, "launch", "simulation_bringup.launch.py")
@@ -64,7 +68,7 @@ def generate_launch_description():
         launch_arguments={
             "use_slam": "false",
             "use_nav2": "false",
-            "use_rviz2": LaunchConfiguration("use_rviz2"),
+            "use_rviz2": "false",
             "use_gui": LaunchConfiguration("use_gui"),
         }.items(),
     )
@@ -136,6 +140,17 @@ def generate_launch_description():
         ],
     )
 
+    # 7. Parking-specific RViz (occupancy + line markers + costmaps + robot).
+    rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        arguments=["-d", parking_rviz, "--ros-args", "--log-level", "ERROR"],
+        parameters=[{"use_sim_time": True}],
+        condition=IfCondition(LaunchConfiguration("use_rviz2")),
+        output="screen",
+    )
+
     return LaunchDescription([
         DeclareLaunchArgument("use_rviz2", default_value="true"),
         DeclareLaunchArgument("use_gui", default_value="true"),
@@ -145,4 +160,5 @@ def generate_launch_description():
         line_detector,
         navigation,
         parking_manager,
+        rviz,
     ])

@@ -45,6 +45,42 @@ ros2 launch storagy simulation_bringup.launch.py use_slam:=false use_nav2:=false
 ros2 launch storagy simulation_bringup.launch.py use_slam:=false use_nav2:=true
 ```
 
+## 자율 주차 데모 (카메라 + 라이다)
+
+로봇이 주차장 월드에서 **빈 주차칸을 스스로 찾아 진입**하는 데모입니다. 카메라(주차선)와
+라이다(점유/깊이)를 결합한 하이브리드 방식입니다.
+
+```bash
+# 전체 자율 주차 데모 (sim + 점유 + 선검출 + Nav2 + 주차 매니저 + 도킹)
+scripts/clean_and_run_parking.sh
+#   └ 헤드리스로: scripts/clean_and_run_parking.sh use_rviz2:=false use_gui:=false
+#   └ Phase 0~2만(주행 없이 인지만): scripts/clean_and_run_parking.sh parking_demo.launch.py
+
+# 상태 확인
+ros2 topic echo /parking/occupancy   # P1=occupied,P2=free,...
+ros2 topic echo /parking/lines       # 카메라가 측정한 주차선(divider) x
+ros2 topic echo /parking/state       # IDLE→NAVIGATING→ARRIVED→DOCKING→DOCKED
+```
+
+`clean_and_run_parking.sh` 는 이전에 떠 있던 sim/ROS 스택(Nav2 서버 포함)을 먼저 모두
+정리한 뒤 **딱 하나**만 실행합니다(스택 sim 방지). RViz 에는 점유/주차선 마커와
+코스트맵이 함께 표시됩니다(`rviz/parking.rviz`).
+
+**동작 흐름**
+
+1. **점유 판정** `slot_occupancy_node` — `/scan` 을 map 프레임으로 변환해 칸별 점 개수로
+   occupied/free 판정 (`param/parking_spaces.yaml` 의 칸 좌표 사용).
+2. **주차선 검출** `line_detector_node` — `/camera/depth/points`(XYZ+RGB)에서 검은 테이프를
+   골라 map 프레임의 divider x 를 측정.
+3. **접근 주행** `parking_manager_node` — 빈 칸을 골라 Nav2(`NavigateToPose`)로 칸 입구 앞
+   접근 포즈까지 주행. (AMCL 없이 ground-truth odom + 식별 `map→odom`,
+   `param/navigation2/storagy_parking.yaml` 의 롤링 코스트맵 사용.)
+4. **도킹** `parking_manager_node` — 카메라가 측정한 divider x 중점으로 측방을 정렬하고,
+   라이다 후벽 거리로 깊이를 맞춰 칸 안 `parked_pose` 까지 정밀 진입.
+
+> 메인 런치 파일은 `launch/parking_nav.launch.py` 입니다. 인지만 보려면
+> `launch/parking_demo.launch.py` 를 쓰세요.
+
 ## 맵 불러오기
 
 매핑은 이미 다른 곳에서 했다고 가정합니다. 기본 맵은 **`parkinglot`** 으로 이미 연결돼 있어,
