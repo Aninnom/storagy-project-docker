@@ -282,6 +282,12 @@
       <pose>0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>15</update_rate>
+      <!-- Without this, gz tags the image/depth/points frame_id as the scoped
+           sensor name "storagy/base_footprint/camera", which is NOT in the TF
+           tree, so any TF lookup for the cloud fails. The published point cloud
+           uses the camera_link axes (x forward, z up — verified empirically),
+           so label it camera_link (NOT the optical frame). -->
+      <gz_frame_id>camera_link</gz_frame_id>
       <camera>
         <horizontal_fov>1.089</horizontal_fov>
         <image>

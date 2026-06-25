@@ -34,6 +34,7 @@ def generate_launch_description():
     pkg_storagy = get_package_share_directory("storagy")
 
     occupancy_script = os.path.join(pkg_storagy, "scripts", "slot_occupancy_node.py")
+    line_script = os.path.join(pkg_storagy, "scripts", "line_detector_node.py")
     parking_yaml = os.path.join(pkg_storagy, "param", "parking_spaces.yaml")
 
     # 1. Simulation (SLAM off; Nav2 off). RViz stays on for visualisation.
@@ -79,10 +80,22 @@ def generate_launch_description():
         output="screen",
     )
 
+    # 4. Camera-based parking-line detector (Phase 2).
+    line_detector = ExecuteProcess(
+        cmd=[
+            "python3", line_script,
+            "--ros-args",
+            "-p", f"yaml_path:={parking_yaml}",
+            "-p", "use_sim_time:=true",
+        ],
+        output="screen",
+    )
+
     return LaunchDescription([
         DeclareLaunchArgument("use_rviz2", default_value="true"),
         DeclareLaunchArgument("use_gui", default_value="true"),
         simulation,
         static_map_odom,
         occupancy,
+        line_detector,
     ])
