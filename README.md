@@ -50,21 +50,29 @@ ros2 launch storagy simulation_bringup.launch.py use_slam:=false use_nav2:=true
 로봇이 주차장 월드에서 **빈 주차칸을 스스로 찾아 진입**하는 데모입니다. 카메라(주차선)와
 라이다(점유/깊이)를 결합한 하이브리드 방식입니다.
 
+noVNC 데스크탑(http://localhost:6080) 터미널에서 실행합니다. 헬퍼 스크립트는
+컨테이너 안에서 돌아야 하므로(이전 sim 정리에 `ps` 사용) **전체 경로**로 호출하세요:
+
 ```bash
 # 전체 자율 주차 데모 (sim + 점유 + 선검출 + Nav2 + 주차 매니저 + 도킹)
-scripts/clean_and_run_parking.sh
-#   └ 헤드리스로: scripts/clean_and_run_parking.sh use_rviz2:=false use_gui:=false
-#   └ Phase 0~2만(주행 없이 인지만): scripts/clean_and_run_parking.sh parking_demo.launch.py
+DEMO=/opt/storagy_project_ws/src/storagy/scripts/clean_and_run_parking.sh
+$DEMO                                   # GUI(Gazebo) + RViz 포함
+$DEMO use_rviz2:=false use_gui:=false   # 헤드리스(가벼움)
+$DEMO parking_demo.launch.py            # Phase 0~2만 (주행 없이 인지만)
 
-# 상태 확인
+# 상태 확인 (다른 터미널에서)
 ros2 topic echo /parking/occupancy   # P1=occupied,P2=free,...
 ros2 topic echo /parking/lines       # 카메라가 측정한 주차선(divider) x
 ros2 topic echo /parking/state       # IDLE→NAVIGATING→ARRIVED→DOCKING→DOCKED
 ```
 
+호스트 셸에서 바로 띄우려면:
+`docker compose exec storagy-project /opt/storagy_project_ws/src/storagy/scripts/clean_and_run_parking.sh`
+
 `clean_and_run_parking.sh` 는 이전에 떠 있던 sim/ROS 스택(Nav2 서버 포함)을 먼저 모두
 정리한 뒤 **딱 하나**만 실행합니다(스택 sim 방지). RViz 에는 점유/주차선 마커와
-코스트맵이 함께 표시됩니다(`rviz/parking.rviz`).
+코스트맵이 함께 표시됩니다(`rviz/parking.rviz`). `src/` 를 수정한 뒤에는
+`rebuild_ws.sh` 로 한 번 재빌드하세요.
 
 **동작 흐름**
 
@@ -207,13 +215,25 @@ noVNC 데스크탑 안의 터미널에서 직접 `rebuild_ws.sh` / `run_sim.sh` 
         ├── CMakeLists.txt
         ├── launch/
         │   ├── simulation_bringup.launch.py  # Gazebo + 로봇 + RViz (+ SLAM/Nav2)
+        │   ├── parking_demo.launch.py        # 인지만: sim + 점유 + 선검출 (Phase 0~2)
+        │   ├── parking_nav.launch.py         # 전체 데모: + Nav2 + 주차/도킹 (Phase 3~4)
         │   └── ...
+        ├── scripts/
+        │   ├── slot_occupancy_node.py        # 라이다 주차칸 점유 판정 → /parking/occupancy
+        │   ├── line_detector_node.py         # 카메라 주차선 검출 → /parking/lines
+        │   ├── parking_manager_node.py       # 칸 선택 + Nav2 접근 + 카메라/라이다 도킹
+        │   └── clean_and_run_parking.sh      # 기존 sim 정리 후 데모 1개 실행
+        ├── rviz/
+        │   ├── storagy.rviz                  # 일반 Nav2 뷰
+        │   └── parking.rviz                  # 주차 데모 뷰 (점유/주차선 마커 + 코스트맵)
         ├── worlds/
         │   └── parkinglot.sdf      # 주차장 월드 (벽 + 검은 테이프 주차칸 4개)
         ├── map/
         │   ├── parkinglot.yaml     # parkinglot 맵 (+ .pgm)
         │   └── ...
         └── param/
-            ├── parking_spaces.yaml          # 주차칸 좌표/주차 목표 자세
-            └── navigation2/storagy.yaml     # Nav2 (풋프린트 0.4x0.3 등)
+            ├── parking_spaces.yaml                  # 주차칸 좌표/주차 목표 자세
+            └── navigation2/
+                ├── storagy.yaml                     # Nav2 기본 (AMCL + 정적맵)
+                └── storagy_parking.yaml             # 주차용 (AMCL 없이 롤링 코스트맵)
 ```
