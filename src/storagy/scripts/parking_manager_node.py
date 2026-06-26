@@ -209,9 +209,15 @@ class ParkingManagerNode(Node):
             return None
 
     def _approach_pose(self, name):
-        cx, _cy = self.slots[name]["center"]
-        y = self.slots[name]["y_min"] - self.approach_offset
-        return (cx, y, self.approach_yaw)
+        # Generic: approach pose sits `approach_offset` metres OUT from the bay
+        # centre on the entry side, facing into the bay (approach_yaw). Works for
+        # either entry side (+/- pi/2) instead of assuming the -Y entry.
+        cx, cy = self.slots[name]["center"]
+        yaw = self.approach_yaw
+        d = self.approach_offset
+        x = cx - d * math.cos(yaw)
+        y = cy - d * math.sin(yaw)
+        return (x, y, yaw)
 
     def _bay_center_x(self, name):
         """Camera-measured bay centre x (mean of the two bounding dividers).
@@ -376,7 +382,7 @@ class ParkingManagerNode(Node):
 
         # Cross-track: robot's left is -X world (heading ~ +Y), so a +X offset
         # (rx > center) is corrected by turning CCW (positive w).
-        e_ct = rx - center
+        e_ct = (rx - center) * math.copysign(1.0, math.sin(self.approach_yaw))
         e_yaw = math.atan2(
             math.sin(self.approach_yaw - yaw), math.cos(self.approach_yaw - yaw)
         )

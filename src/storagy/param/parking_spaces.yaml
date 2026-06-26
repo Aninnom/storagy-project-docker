@@ -1,26 +1,32 @@
-# Parking slots (map frame), aligned to the tape lines in worlds/parkinglot.sdf
-# and flush against the left (X-) wall. Divider tapes sit at
-# x = -2.15, -1.70, -1.25, -0.80, -0.35 (each 0.08 wide); the back line is at
-# y=1.588. Four bays open toward -Y, between consecutive dividers
-# (center-to-center pitch 0.45). Bay interior spans y 1.128..1.628.
+# Parking slots in the REAL map frame (parkinglot.pgm), measured by teleop-
+# parking the robot in each bay and reading TF map->base_footprint.
+# P1,P2,P3,P4 all measured directly now. P3,P4 re-measured 2026-06-26 (they had
+# been extrapolated because the lidar was down at first-measure time, leaving them
+# a few cm off; P3 was off ~3.7 cm). Each X is the 3-window average of
+# map->base_footprint (windows agreed within ~2 mm); y and yaw are kept row-aligned
+# (y=-0.059, yaw=pi/2) as for P1,P2. Resulting row pitch is near-uniform:
+# P1->P2 0.434, P2->P3 0.471, P3->P4 0.437.
+# Row runs along +X, bays open toward -Y (entry), back wall toward +Y, so a parked
+# robot faces +Y (yaw = pi/2) -- same convention as the original Gazebo layout, so
+# slot_occupancy / parking_manager work unchanged.
+# Bay box: width 0.434 (fixed) x depth 0.50; boxes abut with mm-level gaps, no overlap.
 parking_spaces:
   P1:
-    center: {x: -1.925, y: 1.378}
-    bounds: {x_min: -2.150, x_max: -1.700, y_min: 1.128, y_max: 1.628}
-    parked_pose: {x: -1.925, y: 1.378, yaw: 1.5708}
+    center: {x: -1.135, y: -0.059}
+    bounds: {x_min: -1.352, x_max: -0.918, y_min: -0.309, y_max: 0.191}
+    parked_pose: {x: -1.135, y: -0.059, yaw: 1.5708}
   P2:
-    center: {x: -1.475, y: 1.378}
-    bounds: {x_min: -1.700, x_max: -1.250, y_min: 1.128, y_max: 1.628}
-    parked_pose: {x: -1.475, y: 1.378, yaw: 1.5708}
+    center: {x: -0.701, y: -0.059}
+    bounds: {x_min: -0.918, x_max: -0.484, y_min: -0.309, y_max: 0.191}
+    parked_pose: {x: -0.701, y: -0.059, yaw: 1.5708}
   P3:
-    center: {x: -1.025, y: 1.378}
-    bounds: {x_min: -1.250, x_max: -0.800, y_min: 1.128, y_max: 1.628}
-    parked_pose: {x: -1.025, y: 1.378, yaw: 1.5708}
+    center: {x: -0.230, y: -0.059}
+    bounds: {x_min: -0.447, x_max: -0.013, y_min: -0.309, y_max: 0.191}
+    parked_pose: {x: -0.230, y: -0.059, yaw: 1.5708}
   P4:
-    center: {x: -0.575, y: 1.378}
-    bounds: {x_min: -0.800, x_max: -0.350, y_min: 1.128, y_max: 1.628}
-    parked_pose: {x: -0.575, y: 1.378, yaw: 1.5708}
-# Bay pitch 0.45 (center-to-center); clear interior ~0.37 between 0.08 tapes.
+    center: {x: 0.207, y: -0.059}
+    bounds: {x_min: -0.010, x_max: 0.424, y_min: -0.309, y_max: 0.191}
+    parked_pose: {x: 0.207, y: -0.059, yaw: 1.5708}
 size: {garo_x: 0.45, sero_y: 0.50}
 robot_size: {garo_x: 0.30, sero_y: 0.40}
 robot_spawn: {x: 0.150, y: -0.120, yaw: 3.14159}

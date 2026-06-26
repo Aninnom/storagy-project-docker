@@ -12,3 +12,10 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Editor / manual backups
+*.bak
+*.bak2
+
+# External (real-robot) deps pulled via real-robot.repos -- not vendored
+src/rf2o_laser_odometry/
