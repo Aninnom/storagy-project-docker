@@ -51,6 +51,25 @@ def generate_launch_description():
         }.items(),
     )
 
+    # Lidar (scan-matching) odometry. Replaces the wheel odometry, whose firmware
+    # is miscalibrated (drives straight but reports a right turn). motor_driver2's
+    # odom->base_footprint TF broadcast has been disabled; rf2o now owns that TF.
+    laser_odometry = Node(
+        package="rf2o_laser_odometry",
+        executable="rf2o_laser_odometry_node",
+        name="rf2o_laser_odometry",
+        output="screen",
+        parameters=[{
+            "laser_scan_topic": "/scan",
+            "odom_topic": "/odom_rf2o",
+            "publish_tf": True,
+            "base_frame_id": "base_footprint",
+            "odom_frame_id": "odom",
+            "init_pose_from_topic": "",
+            "freq": 20.0,
+        }],
+    )
+
     navigation2 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
@@ -91,6 +110,7 @@ def generate_launch_description():
                 "use_rviz2", default_value=use_rviz2, description="Use rviz2 if true"
             ),
             # Node
+            laser_odometry,
             navigation2,
             robot_state_publisher,
             robot_hardware,

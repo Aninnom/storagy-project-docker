@@ -1,0 +1,12 @@
+# External dependencies for the real-robot stack (NOT vendored in this repo).
+# Pull them into src/ with vcstool before building on the robot:
+#
+#   cd <workspace>            # the dir that contains src/
+#   vcs import src < real-robot.repos
+#   colcon build --symlink-install
+#
+repositories:
+  rf2o_laser_odometry:
+    type: git
+    url: https://github.com/MAPIRlab/rf2o_laser_odometry.git
+    version: b38c68e46387b98845ecbfeb6660292f967a00d3

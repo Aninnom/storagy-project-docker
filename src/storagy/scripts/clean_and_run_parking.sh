@@ -6,10 +6,10 @@
 # occupancy node. Always start the demo through this script.
 #
 # Run it INSIDE the container, from a noVNC desktop terminal so the GUI shows:
-#     ~/... $ /opt/storagy_project_ws/src/storagy/scripts/clean_and_run_parking.sh
+#     ~/... $ /home/storagy/Desktop/storagy_project_ws/src/storagy/scripts/clean_and_run_parking.sh
 # or from the host:
 #     docker compose exec storagy-project \
-#         /opt/storagy_project_ws/src/storagy/scripts/clean_and_run_parking.sh
+#         /home/storagy/Desktop/storagy_project_ws/src/storagy/scripts/clean_and_run_parking.sh
 #
 # Pass extra launch args through, e.g. `... clean_and_run_parking.sh use_rviz2:=false`.
 
@@ -44,7 +44,7 @@ fi
 export DISPLAY="${DISPLAY:-:1}"
 export LIBGL_ALWAYS_SOFTWARE=1
 source /opt/ros/humble/setup.bash
-source /opt/storagy_project_ws/install/setup.bash
+source /home/storagy/Desktop/storagy_project_ws/install/setup.bash
 
 echo "[run] launching one parking demo (Ctrl-C to stop)..."
 # Full autonomous-parking demo: sim + lidar occupancy + camera line detector +
